@@ -6,7 +6,12 @@
 
 | Folder | Owner | What's in it |
 | --- | --- | --- |
-| `graphics/` | Person 5 | All drawing for the MARS Bitmap Display |
+| `graphics/` | August Basinger | All drawing for the MARS Bitmap Display |
+| `xxx/` | x | x |
+| `xxx/` | x | x |
+| `xxx/` | x | x |
+| `xxx/` | x | x |
+
 
 
 ## Running the graphics
