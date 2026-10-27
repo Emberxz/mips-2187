@@ -8,7 +8,6 @@
 | --- | --- | --- |
 | `graphics/` | Person 5 | All drawing for the MARS Bitmap Display |
 
-Persons 1–4 will add their own folders for the Python version and the game logic.
 
 ## Running the graphics
 
