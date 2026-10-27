@@ -7,10 +7,10 @@
 | Folder | Owner | What's in it |
 | --- | --- | --- |
 | `graphics/` | August Basinger | All drawing for the MARS Bitmap Display |
-| `xxx/` | x | x |
-| `xxx/` | x | x |
-| `xxx/` | x | x |
-| `xxx/` | x | x |
+| `movement/` | Person 1 | Turning each direction into lines: `move`, `get_line`, `set_line` |
+| `merge/` | Person 2 | Sliding and merging a line: `slide_merge_line`, `compress_line`, `merge_line` |
+| `board/` | Person 3 | Setting up the board and checking win/loss: `init_matrix`, `spawn_tile`, `check_mat`, `can_move` |
+| `game_loop/` | Person 4 | Main loop, input, score, start screen, and printing the board |
 
 ## Shared data
 
