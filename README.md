@@ -7,9 +7,9 @@
 | Folder | Owner | What's in it |
 | --- | --- | --- |
 | `graphics/` | August Basinger | All drawing for the MARS Bitmap Display |
-| `movement/` | Jacob | Turning each direction into lines: `move`, `get_line`, `set_line` |
+| `movement/` | Jacob Womack | Turning each direction into lines: `move`, `get_line`, `set_line` |
 | `merge/` | Phillip Gill | Sliding and merging a line: `slide_merge_line`, `compress_line`, `merge_line` |
-| `board/` | Caleb | Setting up the board and checking win/loss: `init_matrix`, `spawn_tile`, `check_mat`, `can_move` |
+| `board/` | Caleb Stewart | Setting up the board and checking win/loss: `init_matrix`, `spawn_tile`, `check_mat`, `can_move` |
 | `game_loop/` | Levi Webb | Main loop, input, score, start screen, and printing the board |
 
 ## Shared data
