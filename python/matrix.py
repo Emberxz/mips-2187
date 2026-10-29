@@ -1,1 +1,9 @@
-# add code here!
+# Caleb
+def init_matrix():
+    return 0 
+def spawn_tile():
+    return 0 
+def count_empty():
+    return 0 
+def rand_range(n):
+    return 0 
