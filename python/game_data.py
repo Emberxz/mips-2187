@@ -6,7 +6,7 @@
 
 # ---- gd.matrix ----
 # "What it holds: The board, flat. Cell at row r, column c is gd.matrix[r * 4 + c]"
-matrix = list(range(16))
+matrix = [0] * 16
 
 # ---- gd.score ----
  # "What it holds: The board, flat. Cell at row r, column c is gd.matrix[r * 4 + c]"

@@ -3,7 +3,11 @@
 
 import game_data as gd
 
-def update_score(points):
-    return 0 
-def add_high_score(s):
-    return 0 
+# prints the current game board
+# params: none
+# return: void
+def print_matrix():
+    for index, value in enumerate(gd.matrix):
+        if index % 4 == 0:
+            print("\n")
+        print(str(gd.pow3[value]) + (" " * (-1 * len(str(gd.pow3[value])) + 6) ), end="") # looks funny but it keeps the columns in line
