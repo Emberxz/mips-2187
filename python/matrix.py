@@ -1,4 +1,7 @@
 # Caleb
+
+import game_data as gd
+
 def init_matrix():
     return 0 
 def spawn_tile():

@@ -1,4 +1,7 @@
 # Caleb
+
+import game_data as gd
+
 def check_mat():
     return 0 
 def has_2187():

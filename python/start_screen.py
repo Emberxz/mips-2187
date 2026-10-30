@@ -1,4 +1,7 @@
 # Levi
+
+import game_data as gd
+
 def start_screen():
     return 0 
 def change_theme():
