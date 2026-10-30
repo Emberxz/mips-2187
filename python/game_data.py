@@ -27,13 +27,17 @@ pow3 = [0, 3, 9, 27, 81, 243, 729, 2187]
 
 # --------- Constants ---------
 
+WIN_EXP = 7 # value a cell has to reach for the game to be won (because 3^7 = 2187)
+
 # Key input directions (enumeration where gd.LEFT=0, gd.RIGHT=1, gd.UP=2, gd.DOWN=3)
 LEFT = 0
 RIGHT = 1
 UP = 2
 DOWN = 3
 
-# These are the game states - results of check_mat(),  (eunmeration where gd.CONTINUE=0, gd.WIN=1, gd.LOSS=2)
+# These are the game states - results of check_mat(),  (eunmeration where gd.QUIT=-2 gd.CONTINUE=0, gd.WIN=1, gd.LOSS=2)
+QUIT = -2
 CONTINUE = 0
 WIN = 1
 LOSS = 2
+START_GAME = 3
