@@ -54,15 +54,15 @@ def slide_merge_line(line):
 def compress_line(line):
     # only loop through first three, last one will never slide
     did_compress = 0 
-    i = 2
-    while (i >= 0):
+    i = 0
+    while (i <= 3):
         j = i
-        while j < 3 and line[j] != 0 and line[j + 1] == 0:
-            line[j + 1] = line[j]
+        while j > 0 and line[j] != 0 and line[j - 1] == 0:
+            line[j - 1] = line[j]
             line[j] = 0
             did_compress = 1
-            j += 1
-        i -= 1
+            j -= 1
+        i += 1
     return did_compress
 
 def merge_line(line):
