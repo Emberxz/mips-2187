@@ -2,12 +2,45 @@
 import game_data as gd
 
 # Jacob's part
+
+#gd.matrix[r * 4 + c]
 def move(direction):
-    return 0 
+    points = 0
+    did_work = False
+    for i in range(4):
+        line = get_line(i, direction, [])
+        line_points = slide_merge_line(line)
+        if line_points != -1:
+            did_work = True
+            points += line_points
+        set_line(i, direction, line)
+
+    return points if did_work > 0 else -1
+
+
+def _line_positions(i, direction):
+    match direction:
+        case gd.UP:
+            return [(3 - row) * 4 + i for row in range(4)]
+        case gd.DOWN:
+            return [row * 4 + i for row in range(4)]
+        case gd.LEFT:
+            return [i * 4 + (3 - column) for column in range(4)]
+        case gd.RIGHT:
+            return [i * 4 + column for column in range(4)]
+        case _:
+            return []
+
+
 def get_line(i,direction,line):
-    return 0 
+    line[:] = [gd.matrix[position] for position in _line_positions(i, direction)]
+    return line
+
+
 def set_line(i,direction,line):
-    return 0 
+    for position, value in zip(_line_positions(i, direction), line):
+        gd.matrix[position] = value
+
 
 # Phillip
 def slide_merge_line(line):
