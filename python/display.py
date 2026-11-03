@@ -11,15 +11,16 @@ def print_matrix():
         if index % 4 == 0:
             print("\n")
         print(str(gd.pow3[value]) + (" " * (-1 * len(str(gd.pow3[value])) + 6) ), end="") # looks funny but it keeps the columns in line
+    print("\n")
 
 # prints "You win!". That is all this does
 # params: none
 # return: void
 def you_win():
-    print("You win!")
+    print("You win!\nPress R to restart, Q to Quit")
 
 # prints "You lose :(". I hope that is all this does
 # params: none
 # return: void
 def you_lose():
-    print("You lose :(")
+    print("You lose :(\nPress R to Restart, Q to Quit")
