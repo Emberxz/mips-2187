@@ -20,6 +20,7 @@ theme = 0
 #"What it holds: Top 5 scores, highest first". Initilized to all 0's. Descending order must be maintained
 high_scores = [0] * 5
 
+
 # ---- gd.pow3 ----
  # "What it holds: index to value conversion - so points never need a power function".
  # To get the value of a cell in memory, do gd.pow3[cellVal] ---> ex: gd.pow3[3] = 3^3 = 27 
