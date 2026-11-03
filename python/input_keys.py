@@ -56,5 +56,15 @@ def key_to_dir(key):
             return gd.QUIT
     return -1
 
+# Ignores every key except R (restart) and Q (quit)
+# params: none
+# returns: boolean (True if Restart, False if Quit)
 def wait_for_restart():
-    return 0 
+    while True:
+            keyStroke = get_key()
+    
+            match keyStroke:
+                case "R" | "r":
+                    return True
+                case "Q" | "q":
+                    return False
