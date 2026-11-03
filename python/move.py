@@ -20,13 +20,13 @@ def move(direction):
 
 def _line_positions(i, direction):
     match direction:
-        case gd.UP:
-            return [(3 - row) * 4 + i for row in range(4)]
         case gd.DOWN:
+            return [(3 - row) * 4 + i for row in range(4)]
+        case gd.UP:
             return [row * 4 + i for row in range(4)]
-        case gd.LEFT:
-            return [i * 4 + (3 - column) for column in range(4)]
         case gd.RIGHT:
+            return [i * 4 + (3 - column) for column in range(4)]
+        case gd.LEFT:
             return [i * 4 + column for column in range(4)]
         case _:
             return []

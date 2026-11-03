@@ -7,6 +7,9 @@
 # ---- gd.matrix ----
 # "What it holds: The board, flat. Cell at row r, column c is gd.matrix[r * 4 + c]"
 matrix = [0] * 16
+# You can initilize your own matrix for testing:
+# matrix = [0, 1, 2, 0, 4, 1, 5, 2, 0, 1, 0, 0 ,2, 0, 3, 0]
+
 
 # ---- gd.score ----
  # "What it holds: The current game score"
