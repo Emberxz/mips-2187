@@ -56,7 +56,7 @@ def play_one_game():
         gameState = cm.check_mat()
         match gameState:
             case gd.CONTINUE:
-                mat.spawn_tile()z
+                mat.spawn_tile()
                 continue
             case gd.WIN:
                 d.you_win()
