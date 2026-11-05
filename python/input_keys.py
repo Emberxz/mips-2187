@@ -68,3 +68,17 @@ def wait_for_restart():
                     return True
                 case "Q" | "q":
                     return False
+
+# method for dubugging. prints the direction moved
+# params: int direction
+# return: none
+def print_dir_moved(direction):
+    match direction:
+        case gd.UP:
+            print("*moved up")
+        case gd.DOWN:
+            print("*moved down")
+        case gd.LEFT:
+            print("*moved left")
+        case gd.RIGHT:
+            print("*moved right")
