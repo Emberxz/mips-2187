@@ -51,17 +51,18 @@ def play_one_game():
         s.update_score(pointsFromMove)
         print("\n*current score: " + str(gd.score))
 
-        d.print_matrix()
 
         gameState = cm.check_mat()
         match gameState:
             case gd.CONTINUE:
                 mat.spawn_tile()
+                d.print_matrix()
                 continue
             case gd.WIN:
                 d.you_win()
             case gd.LOSS:
                 d.you_lose()
+
 
         # if we've gotten here, you've either lost or won
         s.add_high_score(gd.score)      # NOTE that if we want to nav to scoreboard if this game made a new highscore,
