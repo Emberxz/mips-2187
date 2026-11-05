@@ -43,32 +43,35 @@ def play_one_game():
         if direction == gd.QUIT:
             s.add_high_score(gd.score)
             break
-        
+
         pointsFromMove = mov.move(direction)
+        gameState = cm.check_mat()
+
+        # you lost, end the game
+        if gameState == gd.LOSS:
+            d.you_lose()
+            s.add_high_score(gd.score)
+            return ik.wait_for_restart()
+
+        # you didn't lose, but move is not valid
         if pointsFromMove == -1:
             print("*invalid move")  # this is just for python version. need to dertermine how we want to show a move does nothing (or just do nothing?)
             continue
+
+        # move was valid
         s.update_score(pointsFromMove)
         print("\n*current score: " + str(gd.score))
 
-
-        gameState = cm.check_mat()
-        match gameState:
-            case gd.CONTINUE:
-                mat.spawn_tile()
-                d.print_matrix()
-                continue
-            case gd.WIN:
-                d.you_win()
-            case gd.LOSS:
-                d.you_lose()
-
-
-        # if we've gotten here, you've either lost or won
-        s.add_high_score(gd.score)      # NOTE that if we want to nav to scoreboard if this game made a new highscore,
-                                        # then add_high_score() needs to determine this and return something so we can do so here
-
-        return ik.wait_for_restart() 
+        # check whether you won
+        if gameState == gd.WIN:
+            d.you_win()
+            s.add_high_score(gd.score)
+            return ik.wait_for_restart()
+        elif gameState == gd.CONTINUE:
+            mat.spawn_tile()
+            d.print_matrix()
+            ik.print_dir_moved(direction)
+            # while loop will run again, ready for the next move
 
 
 # BEGIN THE GAME!!!!!
