@@ -57,6 +57,9 @@ font:
 .word 0x72A7  # 35   'Z'   +140
 
 # control labels 
+# .asciiz lets me go through a string and convert each char
+# to the asciiz value associated so W becomes 32 and I can use the
+# letter from that to get the glyph from above
 str_up:     .asciiz "W UP"
 str_left:   .asciiz "A LEFT"
 str_down:   .asciiz "S DOWN"
