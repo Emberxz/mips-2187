@@ -1,8 +1,8 @@
-# controls: the labels under the gameboard
+# controls has the labels under the gameboard
 
 # draw_controls
-# Draws the grey divider and the 9 control labels under the gameboard.
-# Left column x=146, right column x=272, lines 14 pixels apart, scale 2
+# Draws the grey divider and the 9 control labels under the gameboard
+# Left column x=146 right column x=272 lines 14 pixels apart scale 2
 draw_controls:
     addi $sp,$sp,-4
     sw $ra,0($sp)
@@ -15,9 +15,9 @@ draw_controls:
     li $a3,70
     jal rectangle
 
-    li $t0,0x00FFFFFF     # white text
+    li $t0,0x00FFFFFF     # sets text white
 
-    # left column: movement keys
+    # left column movement keys
     li $a0,146
     li $a1,176
     la $a2,str_up

@@ -1,7 +1,7 @@
-# text: draw_char and draw_text
+# text is draw_char and draw_text
 
 # draw_char
-# Draws one character from the font table.
+# Draws one character from the font table
 # $a0 = x (left edge) $a1 = y (top edge)
 # $a2 = the characters ascii number from .asciiz
 # $a3 = scale (how many pixels wide each cell is)
@@ -80,11 +80,10 @@ dc_done:
     jr $ra
 
 # draw_text
-# Draws a string one character at a time by calling draw_char.
-# $a0 = x, $a1 = y, $a2 = address of the string, $a3 = scale
+# Draws a string one character at a time by calling draw_char
+# $a0 = x $a1 = y $a2 = address of the string $a3 = scale
 # $t0 = color
 draw_text:
-    # save $ra (jal draw_char overwrites it) and the $s registers we use
     addi $sp,$sp,-20
     sw $ra,16($sp)
     sw $s0,0($sp)
@@ -97,11 +96,11 @@ draw_text:
     move $s2,$a2          # s2 = address of the next character
     move $s3,$a3          # s3 = scale
 dt_loop:
-    lbu $t5,0($s2)        # load one byte (one character)
+    lbu $t5,0($s2)        # load one character
     beq $t5,$zero,dt_done # 0 = end of the .asciiz string
     move $a0,$s0
     move $a1,$s1
-    move $a2,$t5          # the character's ASCII code
+    move $a2,$t5          # the characters ASCII code
     move $a3,$s3
     jal draw_char
     sll $t6,$s3,2         # 4 * scale = 3 cells of glyph + 1 cell gap

@@ -41,7 +41,7 @@ main:
     li $v0,10
     syscall
 
-# procedures (each file only has procedures, no main)
+# procedures
 .include "draw_shapes.asm"
 .include "draw_text.asm"
 .include "draw_controls.asm"
