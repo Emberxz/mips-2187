@@ -56,3 +56,6 @@ str_quit:   .asciiz "Q QUIT"
 str_theme:  .asciiz "T THEME"
 str_start:  .asciiz "Z START"
 str_scores: .asciiz "X SCORES"
+
+# used by draw_number to hold the digits
+numBuf:     .space 8
