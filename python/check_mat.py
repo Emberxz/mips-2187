@@ -4,13 +4,13 @@ import game_data as gd
 
 def check_mat():
     #checks the matrix if win/loss/ possible moves
-    if has_2187():
+    if has_177147():
         return gd.WIN
     if not can_move():
         return gd.LOSS
     
     return gd.CONTINUE
-def has_2187():
+def has_177147():
     #checks if any cell has value 2187, returns true/false
     for i in range(16):
         if gd.matrix[i] == gd.WIN_EXP:
