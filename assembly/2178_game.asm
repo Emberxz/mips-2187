@@ -56,11 +56,14 @@ j main			# user selected not to play again, jump to top of main loop to reload s
 play_one_game:
 # registers used:
 # $s0 ---> a direction constant; the direction the user chooses to slide the board
+# $s1 ---> pointsFromMove
+# $s2 ---> gameState (WIN, LOSS, or CONTINUE)
 
-
-######## TODO: update this and the destroy stack frame to do so for all registers used (shown above)
-addi $sp, $sp, -4	# allocate space on the stack for $ra
-sw $ra, 0($sp)		# save return address to stack
+addi $sp, $sp, -16	# allocate space on the stack for $ra and s registers
+sw $ra, 12($sp)		# save return address to stack
+sw $s0, 8($sp)
+sw $s1, 4($sp)
+sw $s2, 0($sp)
 
 jal init_matrix	# initialize the game board in memory
 #########################################################
@@ -75,22 +78,68 @@ beq $s0, QUIT, quit_game	# if user chooses to quit, save score to scoreboard and
 
 move $a0, $s0	# load the direction as a param for the move function
 jal move_direction # loads the number of points from move into $v0
-# STARTHERE (levi):  "pointsFromMove = mov.move(direction)" in the python
+move $s1, $v0	  # move the returned value (pointsFromMove) into $s1
+
+jal check_mat	# check the matrix to see if you've won/lost 
+move $s2, $v0	# move returned value (gameState) into $s2
+
+beq $s2, LOSS, you_lost	# if gameState == LOSS --> jump to you_lost; if you've lost, end the game
+beq $s1, -1, play_one_game_loop # if pointsFromMove == -1; you didn't lose, but move was invalid, just jump back to top of loop to get new direction input
+# if we've gotten here, move was valid
+
+# update the score:
+move $a0, $s1 	# load pointsFromMove into $a0 to act as param for update_score
+jal update_score # call update_score(pointsFromMove)
+
+# check whether or not you've won:
+beq $s2, WIN, you_won
+
+# if we've gotten here, gameState isn't LOSS or WIN, must be CONTINUE
+jal spawn_tile	# add a new tile to board
+##########################################
+# For AJ. draw the matrix again here!
+##########################################
+
+j play_one_game_loop # jump back to top of loop
+
+you_lost:
+jal you_lose	# draw lose screen
+j game_over_logic
 
 
+you_won:
+jal you_win	# draw win screen
+j game_over_logic
 
+game_over_logic:
+# update the highscores array
+la $a0, score 	# get address of score
+lw $a0, 0($a0) 	# load current score from memory into $a0 to act as param for add_high_score 
+jal add_high_score # call add_high_score(score)
 
-# TODO: figure when to jump back to top of while loop, and when/how to end program
+jal wait_for_restart 	# wait for user to restart or quit
+# wait_for_restart loads the key command into $v0, return this for play_one_game; simply need to end play_one_game:
+j end_play_one_game 
+
 
 quit_game:
+# update the highscores array
+la $a0, score 	# get address of score
+lw $a0, 0($a0) 	# load current score from memory into $a0 to act as param for add_high_score 
+jal add_high_score # call add_high_score(score)
+
 li $v0, 0	# load 0 on $v0 to be returned (don't play again)
 j end_play_one_game	 
 
 end_play_one_game:
 # destroy the stack frame; restore all from their offests
-lw $ra, 0($sp)
-addi $sp, $sp, 4  # move the stack pointer back up to where it was
+lw $ra, 12($sp)
+lw $s0, 8($sp)
+lw $s1, 4($sp)
+lw $s2, 0($sp)
+addi $sp, $sp, 16  # move the stack pointer back up to where it was
 jr $ra # return to caller
+
 
 
 # ----------------- start_screen -----------------
@@ -344,24 +393,6 @@ jr $ra
 # params: $a0 ---> int points
 # return: void
 update_score:
-# registers used:
-# $a0 ---> points to be added to score
-# $s0 --> memory address of score
-# $s1 ---> score value
-la $s0, score		# get memory address of score
-lw $s1, 0($s0)		# load value at memory address --> load the score value
-add $s1, $s1, $a0	# add points to score ---> score value = score value + points value
-sw $s1, 0($s0)		# store the updated score value back in memory
-jr $ra			# jump back to caller
-
-
-# ---------------------- score ----------------------
-
-# --- method: update_score ---
-# update score, add points
-# params: $a0 ---> int points
-# return: void
-update_score:
 # registers:
 # $a0 ---> points to be added to score
 # $t0 --> memory address of score
@@ -452,6 +483,13 @@ lw $s1, 0($sp)
 addiu $sp, $sp, 12
 
 jr $ra
+
+
+
+
+
+
+
 
 # bool compress_line(int line[4])
 # returns: whether the line was compressed
