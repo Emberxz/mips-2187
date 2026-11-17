@@ -417,3 +417,179 @@ sw $a0, 0($t4)		# set high_scores[i + 1] to score in memory!!!
 
 done_adding_high_score:
 jr $ra		# jump back to caller
+
+# int slide_merge_line(int line[4])
+# returns: points if a move was made and -1 if no move was made
+# $a0 = int line[4]
+slide_merge_line:
+# save $s0, $s1 to the stack
+addiu $sp, $sp, -12
+sw $ra, 8($sp)
+sw $s0, 4($sp)
+sw $s1, 0($sp)
+
+move $s0, $zero		# $s0 = did_work = 0
+
+jal compress_line	# compress_line(line)
+or $s0, $s0, $v0	# did_work |= compress_line(line)
+
+jal merge_line		# merge_line(line)
+or $s0, $s0, $v0	# did_work |= merge_line(line)
+move $s1, $v0		# $s1 = points = merge_line(line)
+
+jal compress_line	# compress_line(line)
+or $s0, $s0, $v0	# did_work |= compress_line(line)
+
+move $v0, $s1		# $v0 = points
+bgt $s0, $zero, slide_merge_line_return	# if (did_work > 0) -> slide_merge_line_return
+li $v0, -1		# $v0 = -1
+
+slide_merge_line_return:
+# pop saved values from the stack
+lw $ra, 8($sp)
+lw $s0, 4($sp)
+lw $s1, 0($sp)
+addiu $sp, $sp, 12
+
+jr $ra
+
+# bool compress_line(int line[4])
+# returns: whether the line was compressed
+compress_line:
+# save used registers
+addiu $sp, $sp, -28
+sw $s6, 0($sp)
+sw $s5, 4($sp)
+sw $s4, 8($sp)
+sw $s3, 12($sp)
+sw $s2, 16($sp)
+sw $s1, 20($sp)
+sw $s0, 24($sp)
+
+move $s0, $zero		# $s0 = did_compress = 0
+move $s1, $zero		# $s1 = i = 0
+
+compress_outer_loop:
+bgt $s1, 3, compress_outer_loop_done	# if (i > 3) -> compress_outer_loop_done
+move $s2, $s1		# $s2 = j = i
+
+compress_inner_loop:
+ble $s2, 0, compress_inner_loop_done	# if (j <= 0) -> compress_inner_loop_done
+
+# $s3 = &line[j]
+sll $s3, $s2, 2
+addu $s3, $s3, $a0
+
+# $s4 = line[j]
+lw $s4, 0($s3)
+
+# $s5 = &line[j - 1]
+addiu $s5, $s2, -1
+sll $s5, $s5, 2
+addu $s5, $s5, $a0
+
+# $s6 = line[j - 1]
+lw $s6, 0($s5)
+
+beq $s4, 0, compress_inner_loop_done	# if (line[j] == 0) -> compress_inner_loop_done
+bne $s6, 0, compress_inner_loop_done	# if (line[j - 1] != 0) -> compress_inner_loop_done
+
+sw $s4, 0($s5)		# line[j - 1] = line[j]
+sw $zero, 0($s3)	# line[j] = 0
+li $s0, 1		# did_compress = 1
+addiu $s2, $s2, -1	# j--
+
+j compress_inner_loop
+
+compress_inner_loop_done:
+addiu $s1, $s1, 1	# i++
+j compress_outer_loop
+
+compress_outer_loop_done:
+# return did_compress
+move $v0, $s0
+
+# restore used registers
+lw $s0, 24($sp)
+lw $s1, 20($sp)
+lw $s2, 16($sp)
+lw $s3, 12($sp)
+lw $s4, 8($sp)
+lw $s5, 4($sp)
+lw $s6, 0($sp)
+addiu $sp, $sp, 28
+
+jr $ra
+
+# int merge_line(int line[4])
+# returns: the points from the merge
+merge_line:
+# save used registers
+addiu $sp, $sp, -28
+sw $s6, 0($sp)
+sw $s5, 4($sp)
+sw $s4, 8($sp)
+sw $s3, 12($sp)
+sw $s2, 16($sp)
+sw $s1, 20($sp)
+sw $s0, 24($sp)
+
+move $s0, $zero		# $s0 = points = 0
+move $s1, $zero		# $s1 = i = 0
+
+merge_loop:
+bge $s1, 3, merge_loop_done		# if (i >= 3) -> merge_loop_done
+
+# $s2 = &line[i]
+sll $s2, $s1, 2
+addu $s2, $s2, $a0
+
+# $s3 = line[i]
+lw $s3, 0($s2)
+
+# $s4 = &line[i + 1]
+addiu $s4, $s1, 1
+sll $s4, $s4, 2
+addu $s4, $s4, $a0
+
+# $s5 = line[i + 1]
+lw $s5, 0($s4)
+
+beq $s3, 0, merge_loop_continue		# if (line[i] == 0) -> merge_loop_continue
+bne $s3, $s5, merge_loop_continue	# if (line[i] != line[i + 1]) -> merge_loop_continue
+
+addiu $s5, $s5, 1	# line[i + 1]++
+move $s3, $zero		# line[i] = 0
+
+sw $s5, 0($s4)
+sw $s3, 0($s2)
+
+# increment points
+la $t0, pow3        # $t0 = &pow3
+move $t1, $zero     # $t1 = 0 = offset into pow3
+sll $t1, $t1, $s5   # $t1 = line[i + 1] * 4
+addu $t0, $t0, $t1  # $t0 = &pow3[line[i + 1]]
+lw $t1, 0($t0)      # $t1 = pow3[line[i + 1]]
+addu $s0, $s0, $t1  # $s0 += pow3[line[i + 1]]
+
+addiu $s1, $s1, 1	# i++
+
+merge_loop_continue:
+addiu $s1, $s1, 1	# i++
+j merge_loop
+
+merge_loop_done:
+# return points
+move $v0, $s0
+
+# restore used registers
+lw $s0, 24($sp)
+lw $s1, 20($sp)
+lw $s2, 16($sp)
+lw $s3, 12($sp)
+lw $s4, 8($sp)
+lw $s5, 4($sp)
+lw $s6, 0($sp)
+addiu $sp, $sp, 28
+
+jr $ra
