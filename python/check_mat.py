@@ -8,6 +8,7 @@ def check_mat():
         return gd.WIN
     if not can_move():
         return gd.LOSS
+    return gd.CONTINUE
     
     return gd.CONTINUE
 def has_177147():
