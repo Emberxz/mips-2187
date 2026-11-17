@@ -60,8 +60,26 @@ update_score:
 # $s1 ---> score value
 la $s0, score		# get memory address of score
 lw $s1, 0($s0)		# load value at memory address --> load the score value
-add $s1, $s1, $a0		# add points to score ---> score value = score value + points value
+add $s1, $s1, $a0	# add points to score ---> score value = score value + points value
 sw $s1, 0($s0)		# store the updated score value back in memory
+jr $ra			# jump back to caller
+
+
+# ---------------------- score ----------------------
+
+# --- method: update_score ---
+# update score, add points
+# params: $a0 ---> int points
+# return: void
+update_score:
+# registers:
+# $a0 ---> points to be added to score
+# $t0 --> memory address of score
+# $t1 ---> score value
+la $t0, score		# get memory address of score
+lw $t1, 0($t0)		# load value at memory address --> load the score value
+add $t1, $t1, $a0	# add points to score ---> score value = score value + points value
+sw $t1, 0($t0)		# store the updated score value back in memory
 jr $ra			# jump back to caller
 
 
@@ -74,42 +92,38 @@ jr $ra			# jump back to caller
 add_high_score:
 # registers:
 # $a0 ---> int score to be inserted
-# $s0 --->  starting memory address of high_scores arr
-# $s1 ---> i. starts as the 2nd to last value of high_scores
-# $s2 ---> address of high_scores[i]
-# $s3 ---> value of high_scores[i]
-# $s4 ---> i + 1, then address of high_scores[i + 1]
-# $s5 ---> address of high_scores[i + 1]
-la $s0, high_scores	# get the starting memory address of the high_scores arr
-li $s1, 3	# i = 3; put index of 2nd to last element (3) into i
+# $t0 --->  starting memory address of high_scores arr
+# $t1 ---> i. starts as the 2nd to last value of high_scores
+# $t2 ---> byte offset / address of high_scores[i]
+# $t3 ---> value of high_scores[i]
+# $t4 ---> i + 1, then address of high_scores[i + 1]
+la $t0, high_scores	# get the starting memory address of the high_scores arr
+li $t1, 3	# i = 3; put index of 2nd to last element (3) into i
 
-bgt $a0, 4($s0) needToAdd		# if the score is less than the lowsest highscore, then we don't need to add it. end
-j done_adding_high_score
+lw $t3, 16($t0)		# load value of high_scores[4] into $t3
+ble $a0, $t3, done_adding_high_score		# if the score is less than the lowsest highscore (high_scores[4] (4*4bytes = 16), then we don't need to add it. end
 
-needToAdd:
-blt $s1, 0, insert_value	# while i >= 0. jumps out of loop when i<0
+add_high_score_loop:
+blt $t1, 0, insert_value	# while i >= 0. jumps out of loop when i<0
 
 # if gd.high_scores[i] < score then shift down, else we are dont shifting so jump to insert_value
-add $s2, $s0, $s1	# compute address of high_scores[i] ---> $s2 = start address of high_scores + i
-lw $s3, 0($s2)		# get value of high_scores[i] into $s3
+sll $t2, $t1, 2		# convert to byte offset - > $t2 = i * 4
+add $t2, $t0, $t2	# compute address of high_scores[i] ---> $t2 = start address of high_scores + i
+lw $t3, 0($t2)		# get value of high_scores[i] into $t3
 
-bge $s3, $s0 insert_value		# if high_scores[i] >= score, then we found where to insert the value
+bge $t3, $a0, insert_value		# if high_scores[i] >= score, then we found where to insert the value
 # otherwise shift down and decrement i:
-addi $s4, $s1, 1		# calculate i + 1
-addi $s4, $s4, $s0	# get address of high_scores[i + 1]
-sw $s3, 0($s4)	# set high_scores[i + 1] as highscores[i] (this is in $s3) in memory
-
-addi $s1, $s1 -1		# decrement i: i -= 1 
-j needToAdd 	# jump back to top of while loop
+sw $t3, 4($t2)		# high_scores[i + 1] = high_scores[i]
+addi $t1, $t1, -1	# i -=1
+j add_high_score_loop	# jump back to top of loop
 
 insert_value:
 # insert score into high_scores[i + 1]
-addi $s4, $s1, 1		# calculate i + 1
-addi $s4, $s4, $s0	# get address of high_scores[i + 1]
+addi $t4, $t1, 1		# calculate i + 1
+sll $t4, $t4, 2		# convert to byte offset --> (i + 1) * 4
+add $t4, $t4, $t0	# get address of high_scores[i + 1]
 
-sw $a0, 0($s4)		# set high_scores[i + 1] to score in memory!!!
+sw $a0, 0($t4)		# set high_scores[i + 1] to score in memory!!!
 
 done_adding_high_score:
 jr $ra		# jump back to caller
-	
-# STARTHEREL: fix bugs in add_high_score (see claude) and feed it back again to ensure correct
