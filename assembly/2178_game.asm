@@ -40,11 +40,77 @@ START_GAME: .word 3
 # main game loop
 main:
 
+jr $ra
 
 
 
 
 
+# ------------------ input_keys -------------------
+
+get_input:
+
+jr $ra
+
+
+# method: get_key
+# params: none
+# returns a single character coorepsonding to the key that was pressed
+get_key:
+# Memory-Mapped I/O Addresses
+# 0xFFFF0000 – Keyboard Control  (0 = no key, 1 = key pressed)
+# 0xFFFF0004 – Keyboard Data     (ASCII value of key pressed)
+
+lw   $t0, 0xFFFF0000($zero)     # load keyboard control register
+andi $t0, $t0, 0x0001           # check if a key is available
+beq  $t0, $zero, wait_key       # if not, keep looping
+
+lw   $v0, 0xFFFF0004($zero)     # read ASCII value of key pressed. return it by putting it into $v0
+jr $ra	# return to the caller
+
+
+# method: key_to_dir
+# params: $a0 --> the key
+# 
+key_to_dir:
+# registers used:
+# 
+
+jr $ra
+
+
+
+wait_for_restart:
+
+jr $ra
+
+
+
+
+
+
+# ---------------------- display --------------------
+
+# --- method: you_win ---
+you_win:
+# registers used:
+# xyz
+
+# TODO: fill out
+# This method is for AJ!
+
+jr $ra
+
+
+# --- method: you_lose ---
+you_lose:
+# registers used:
+# xyz
+
+# TODO: fill out
+# This method is for AJ!
+
+jr $ra
 
 
 # ---------------------- score ----------------------
@@ -54,7 +120,7 @@ main:
 # params: $a0 ---> int points
 # return: void
 update_score:
-# registers:
+# registers used:
 # $a0 ---> points to be added to score
 # $s0 --> memory address of score
 # $s1 ---> score value
