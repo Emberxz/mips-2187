@@ -42,7 +42,7 @@ def play_one_game():
         direction = ik.get_input()
         if direction == gd.QUIT:
             s.add_high_score(gd.score)
-            break
+            return 0
 
         pointsFromMove = mov.move(direction)
         gameState = cm.check_mat()

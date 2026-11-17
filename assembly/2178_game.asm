@@ -39,10 +39,58 @@ pow3: .word 0, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147
 
 # main game loop
 main:
+jal start_screen	 # build start screen. method loop ends when the game is started (START_GAME returned) or program is exited (QUIT_PROGRAM returned) 
 
-jr $ra
+beq $v0, START_GAME, play_again_loop
+# start_screen can only return START_GAME or QUIT_PROGRAM. if we made it here, quit the program:
+li $v0, 10
+syscall
+
+play_again_loop:
+jal play_one_game	# play a game; returns into $v0 whether or not the user will play another game
+beq $v0, 1, play_again_loop	# user selected to play again, jump back to top of play_again_loop
+j main			# user selected not to play again, jump to top of main loop to reload start screen
 
 
+# method: play_one_game
+play_one_game:
+# registers used:
+# $s0 ---> a direction constant; the direction the user chooses to slide the board
+
+
+######## TODO: update this and the destroy stack frame to do so for all registers used (shown above)
+addi $sp, $sp, -4	# allocate space on the stack for $ra
+sw $ra, 0($sp)		# save return address to stack
+
+jal init_matrix	# initialize the game board in memory
+#########################################################
+# For AJ: call your method to draw the matrix board here
+#########################################################
+
+play_one_game_loop:
+jal get_input	# get input, loads the direction constant into $v0
+move $s0, $v0	# move the return value to $s0
+
+beq $s0, QUIT, quit_game	# if user chooses to quit, save score to scoreboard and end game
+
+move $a0, $s0	# load the direction as a param for the move function
+jal move_direction # loads the number of points from move into $v0
+# STARTHERE (levi):  "pointsFromMove = mov.move(direction)" in the python
+
+
+
+
+# TODO: figure when to jump back to top of while loop, and when/how to end program
+
+quit_game:
+li $v0, 0	# load 0 on $v0 to be returned (don't play again)
+j end_play_one_game	 
+
+end_play_one_game:
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+jr $ra # return to caller
 
 
 # ----------------- start_screen -----------------
@@ -113,7 +161,6 @@ jr $ra # return to caller
 
 
 
-
 # method: change_theme
     # if gd.theme == 0:
     #     gd.theme = 1
@@ -140,11 +187,26 @@ jr $ra 	# return to caller
 
 # method: show_scores
 show_scores:
-# (levi) STARTHERE: build out this method, then play_one_game and main
+addi $sp, $sp, -4	# allocate space on the stack for $ra
+sw $ra, 0($sp)		# save return address to stack
+
+########################################
+# FOR AJ: build scoreboard screen here!
+########################################
 
 
-jr $ra
+show_scores_while_loop:
+jal get_key	# key the user hit is now stored in $v0
 
+beq $v0, 120, show_scores_x_pressed	# key = 120 (ascii x)
+j show_scores_while_loop		# no valid key pressed, jump back to top of loop
+
+
+show_scores_x_pressed:
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+jr $ra # return to caller
 
 
 # ------------------ input_keys -------------------
