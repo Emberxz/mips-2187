@@ -45,6 +45,107 @@ jr $ra
 
 
 
+# ----------------- start_screen -----------------
+
+# method: start_screen
+    # print_start_menu()
+
+    # while True:
+    #     keyStroke = ik.get_key()
+
+    #     match keyStroke:
+    #         case "Z" | "z":
+    #             return gd.START_GAME
+    #         case "Q" | "q":
+    #             return gd.QUIT_PROGRAM
+    #         case "X" | "x":
+    #             show_scores()
+    #             print_start_menu()
+    #         case "T" | "t":
+    #             print("The theme has been changed to " + str(gd.theme) + " (*only visible in mips graphics)")
+    #             change_theme()
+start_screen:
+addi $sp, $sp, -4	# allocate space on the stack for $ra
+sw $ra, 0($sp)		# save return address to stack
+
+####################################
+# FOR AJ: build the start menu here!
+####################################
+#* call it in ss_x_pressed below too (or refactor/rearrange)
+
+start_screen_while_loop:
+jal get_key	# key the user hit is now stored in $v0
+
+beq $v0, 122, ss_z_pressed	# key = 122 (ascii z)
+beq $v0, 113, ss_q_pressed	# key = 113 (ascii q)
+beq $v0, 120, ss_x_pressed	# key = 120 (ascii x)
+beq $v0, 116, ss_t_pressed	# key = 116 (ascii t)
+j start_screen_while_loop		# no valid key pressed, jump back to top of loop
+
+
+ss_z_pressed:
+# start game:
+li $v0, START_GAME
+j start_screen_end_loop
+
+
+ss_q_pressed:
+li $v0, QUIT_PROGRAM
+j start_screen_end_loop
+
+
+ss_x_pressed:
+jal show_scores # navigate to the show_scores screen
+# AJ: reprint the start menu here!
+j start_screen_while_loop # jump back to top of while loop
+
+
+ss_t_pressed:
+jal change_theme	# toggle the theme
+j start_screen_while_loop # jump back to top of while loop
+
+
+start_screen_end_loop:
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+jr $ra # return to caller
+
+
+
+
+# method: change_theme
+    # if gd.theme == 0:
+    #     gd.theme = 1
+    # elif gd.theme == 1:
+    #     gd.theme = 0
+change_theme:
+# registers used:
+# $t0 ---> address of the current theme
+# $t1 ---> value of the current theme
+
+la $t0, theme  # load address of current theme into $t0
+lbu $t1, 0($t0) # load the value of the current theme into $t1
+
+beq $t1, 0, toggleToOne	# if theme == 0, set to 1
+# else (theme == 1), set theme to 0
+sb $zero, 0($t0)
+jr $ra 	# return to caller
+
+toggleToOne:
+li $t2, 1
+sb $t2, 0($t0)
+jr $ra 	# return to caller
+
+
+# method: show_scores
+show_scores:
+# (levi) STARTHERE: build out this method, then play_one_game and main
+
+
+jr $ra
+
+
 
 # ------------------ input_keys -------------------
 
