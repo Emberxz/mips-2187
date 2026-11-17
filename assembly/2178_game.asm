@@ -20,18 +20,18 @@ high_scores: .word 0: 5	   # initilize a 5 int array, all ints set  to 0
 pow3: .word 0, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147
 
 # constants:
-WIN_EXP: .`word 11
-LEFT: .word 0
-RIGHT: .word 1
-UP: .word 2
-DOWN: .word 3
+.eqv WIN_EXP 11
+.eqv LEFT 0
+.eqv RIGHT 1
+.eqv UP 2
+.eqv DOWN 3
 
-QUIT_PROGRAM: .word -3
-QUIT: .word -2
-CONTINUE: .word 0
-WIN: .word 1
-LOSS: .word 2
-START_GAME: .word 3
+.eqv QUIT_PROGRAM -3
+.eqv QUIT -2
+.eqv CONTINUE 0
+.eqv WIN 1
+.eqv LOSS 2
+.eqv START_GAME 3
 
 
 # ------- All game logic goes here -------
@@ -48,9 +48,26 @@ jr $ra
 
 # ------------------ input_keys -------------------
 
+# method get_input:
 get_input:
+addi $sp, $sp, -4	# allocate space on the stack for $ra
+sw $ra, 0($sp)		# save return address to stack
 
-jr $ra
+get_input_while_loop:
+
+jal get_key	# key the user hit is now stored in $v0
+
+move $a0, $v0	# set 1st param $a0 to the key that was pressed
+jal key_to_dir   # call key_to_dir(key), puts a direction constant in $v0
+
+beq $v0, -1, get_input_while_loop # w a s or d was NOT pressed, loop again
+# w a s or d WAS pressed, return direction constant (it is still loaded into $v0)
+
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+
+jr $ra	# return
 
 
 # method: get_key
@@ -70,19 +87,63 @@ jr $ra	# return to the caller
 
 
 # method: key_to_dir
-# params: $a0 --> the key
-# 
+# params: $a0 --> the key pressed (ASCII value)
 key_to_dir:
-# registers used:
-# 
+beq $a0, 119, w_pressed	# key = 119 (ascii w)
+beq $a0, 97, a_pressed	# key = 97 (ascii a)
+beq $a0, 115, s_pressed	# key = 115 (ascii s)
+beq $a0, 100, d_pressed	# key = 100 (ascii d)
 
+li $v0, -1	# key was not w, a, s, or d. return -1
+jr $ra
+
+w_pressed:
+li $v0, UP	# return UP (2)
+jr $ra
+
+a_pressed:
+li $v0, RIGHT	# return RIFHT
+jr $ra
+
+s_pressed:
+li $v0, DOWN	# return DOWN
+jr $ra
+
+d_pressed:
+li $v0, LEFT	# return LEFT
 jr $ra
 
 
 
+# method: wait_for_restart
+# returns 1 if r is pressed and 0 if q is pressed
 wait_for_restart:
+addi $sp, $sp, -4	# allocate space on the stack for $ra
+sw $ra, 0($sp)		# save return address to stack
 
-jr $ra
+wait_for_restart_while_loop:
+jal get_key	# key the user hit is now stored in $v0
+
+beq $v0, 114, r_pressed	# key = 114 (ascii r)
+beq $v0, 113, q_pressed	# key = 113 (ascii q)
+
+j wait_for_restart_while_loop # neither r nor q was pressed, jump back to top of loop
+
+r_pressed:
+li $v0, 1	# return True (1)
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+jr $ra # return
+
+q_pressed:
+li $v0, 0	# return False (0)
+# destroy the stack frame; restore all from their offests
+lw $ra, 0($sp)
+addi $sp, $sp, 4  # move the stack pointer back up to where it was
+jr $ra # return
+
+
 
 
 
