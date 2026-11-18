@@ -43,6 +43,24 @@ font:
 .word 0x5A92  # 34   'Y'   +136
 .word 0x72A7  # 35   'Z'   +140
 
+# tile tables one word per exponent 0-11 (0 = empty, 11 = 177147 the winning tile)
+# real value of each exponent
+pow3:       .word 0, 3, 9, 27, 81, 243, 729, 2187
+            .word 6561, 19683, 59049, 177147
+# tile color for each exponent
+#                 empty       3           9           27
+tileColors: .word 0x002B2B2B, 0x00F2E8CF, 0x00F4D58D, 0x00F6A85B
+#                 81          243         729         2187
+            .word 0x00F26B5B, 0x00E04F8F, 0x008F5FD6, 0x003CB371
+#                 6561        19683       59049       177147
+            .word 0x002A9D8F, 0x003A6EA5, 0x00B03A7A, 0x00D49A00
+# how far right of the tile's left edge the number starts so it is centered
+# (51 - width) / 2
+#   exponents 1-8  use scale 3: width = digits*12 - 3
+#   exponents 9-11 use scale 2: width = digits*8 - 2 (5 and 6 digits are too wide at scale 3)
+#                 -   3   9  27  81 243 729 2187 6561 19683 59049 177147
+tileTextX:  .word 0, 21, 21, 15, 15,  9,  9,  3,   3,    6,    6,     2
+
 # control labels 
 # .asciiz lets me go through a string and convert each char
 # to the asciiz value associated so W becomes 32 and I can use the
