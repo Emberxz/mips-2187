@@ -77,6 +77,8 @@ matrix:     .word 11, 10, 9, 8
             .word 0, 1, 0, 2
 # TEMP test score so the win/lose pop-up has a number to show
 score:      .word 48213
+# TEMP test high scores (the team file starts these at all 0)
+high_scores: .word 48213, 1458, 0, 0, 0
 # TEMP test theme 0 = home 1 = away (the team file has the real one)
 theme:      .byte 0
 
@@ -98,6 +100,10 @@ str_scores: .asciiz "X SCORES"
 str_win:    .asciiz "YOU WIN"
 str_lose:   .asciiz "YOU LOSE"
 str_score:  .asciiz "SCORE"
+
+# high scores pop-up
+str_hiscores: .asciiz "HIGH SCORES"
+str_close:  .asciiz "X CLOSE"
 
 # used by draw_number to hold the digits
 numBuf:     .space 8

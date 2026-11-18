@@ -82,3 +82,71 @@ draw_popup:
     lw $s1,4($sp)
     addi $sp,$sp,12
     jr $ra
+
+# draw_high_scores
+# Pops up the scoreboard window with the top 5 from high_scores
+# Empty slots are 0 so they just show 0
+draw_high_scores:
+    addi $sp,$sp,-12
+    sw $ra,8($sp)
+    sw $s0,0($sp)
+    sw $s1,4($sp)
+
+    # window background (same as the win/lose)
+    li $t0,0x003A6EA5     # blue
+    li $a0,166
+    li $a1,180
+    li $a2,20
+    li $a3,136
+    jal rectangle
+
+    # white border
+    li $t0,0x00FFFFFF
+    li $a0,166
+    li $a1,180
+    li $a2,20
+    li $a3,136
+    jal draw_box
+
+    # title
+    li $a0,213            # centered (256 - 86/2)
+    li $a1,30
+    la $a2,str_hiscores
+    li $a3,2
+    jal draw_text
+
+    # the 5 rows rank on the left and the score next to it
+    li $s0,0              # s0 = row 0-4
+    li $s1,50             # s1 = y of the row, 16 pixels apart
+dhs_loop:
+    li $a0,196
+    move $a1,$s1
+    addi $a2,$s0,49       # rank as a character '1' is 49
+    li $a3,2
+    jal draw_char
+
+    sll $t6,$s0,2         # row * 4
+    la $t5,high_scores
+    add $t5,$t5,$t6
+    lw $a2,0($t5)         # this rows score
+    li $a0,226
+    move $a1,$s1
+    li $a3,2
+    jal draw_number
+
+    addi $s1,$s1,16       # next row down
+    addi $s0,$s0,1
+    blt $s0,5,dhs_loop    # 5 rows
+
+    # how to close it
+    li $a0,229            # centered (256 - 54/2)
+    li $a1,138
+    la $a2,str_close
+    li $a3,2
+    jal draw_text
+
+    lw $ra,8($sp)
+    lw $s0,0($sp)
+    lw $s1,4($sp)
+    addi $sp,$sp,12
+    jr $ra
