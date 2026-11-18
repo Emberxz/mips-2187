@@ -61,6 +61,13 @@ tileColors: .word 0x002B2B2B, 0x00F2E8CF, 0x00F4D58D, 0x00F6A85B
 #                 -   3   9  27  81 243 729 2187 6561 19683 59049 177147
 tileTextX:  .word 0, 21, 21, 15, 15,  9,  9,  3,   3,    6,    6,     2
 
+# TEMP test board so print_matrix has something to draw
+# remove this once the game data file defines the real matrix
+matrix:     .word 11, 10, 9, 8
+            .word 4, 5, 6, 7
+            .word 3, 2, 1, 0
+            .word 0, 1, 0, 2
+
 # control labels 
 # .asciiz lets me go through a string and convert each char
 # to the asciiz value associated so W becomes 32 and I can use the

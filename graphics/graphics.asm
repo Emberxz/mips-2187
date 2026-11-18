@@ -37,6 +37,9 @@ main:
     # control labels under the gameboard
     jal draw_controls
 
+    # all 16 tiles from matrix
+    jal print_matrix
+
     # Exit after returning
     li $v0,10
     syscall
