@@ -8,7 +8,7 @@ import game_data as gd
 # return: void
 def update_score(points):
     gd.score += points
-
+    
 # inserts s into gd.high_scores, which must stay in sorterd order; the lowest drops off. Uses a loop rather than sorted() so easy conversion to assembly
 # loops backwards and shifts values down until it finds the location to insert
 # params: s - int value, the score to be added to the scoreboard

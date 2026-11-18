@@ -21,8 +21,8 @@ def start_screen():
                 show_scores()
                 print_start_menu()
             case "T" | "t":
-                print("The theme has been changed to " + str(gd.theme) + " (*only visible in mips graphics)")
                 change_theme()
+                print("The theme has been changed to " + str(gd.theme) + " (*only visible in mips graphics)")
             
 # Toggles the theme; toggles the gd.theme value, which can be 0 (Home Game) or 1 (Away Game)
 # params: none

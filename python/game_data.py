@@ -8,7 +8,7 @@
 # "What it holds: The board, flat. Cell at row r, column c is gd.matrix[r * 4 + c]"
 matrix = [0] * 16
 # You can initilize your own matrix for testing:
-# matrix = [0, 1, 2, 0, 4, 1, 5, 2, 0, 1, 0, 0 ,2, 0, 3, 0]
+# matrix = [1, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2 , 2, 1, 2, 1]
 
 
 # ---- gd.score ----
@@ -27,11 +27,11 @@ high_scores = [0] * 5
 # ---- gd.pow3 ----
  # "What it holds: index to value conversion - so points never need a power function".
  # To get the value of a cell in memory, do gd.pow3[cellVal] ---> ex: gd.pow3[3] = 3^3 = 27 
-pow3 = [0, 3, 9, 27, 81, 243, 729, 2187]
+pow3 = [0, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147]
 
 # --------- Constants ---------
 
-WIN_EXP = 7 # value a cell has to reach for the game to be won (because 3^7 = 2187)
+WIN_EXP = 11 # value a cell has to reach for the game to be won (because 3^11 = 177147)
 
 # Key input directions (enumeration where gd.LEFT=0, gd.RIGHT=1, gd.UP=2, gd.DOWN=3)
 LEFT = 0
