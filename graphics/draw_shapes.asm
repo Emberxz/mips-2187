@@ -58,13 +58,14 @@ draw_game_screen:
     jal draw_frame
     jal draw_controls
     jal print_matrix
+    jal draw_scoreboard
 
     lw $ra,0($sp)
     addi $sp,$sp,4
     jr $ra
 
 # draw_box
-# Draws the outline of a box as four filled rectangles and the BORDER pixels sets thinckness.
+# Draws the outline of a box as four filled rectangles and the BORDER pixels sets thinckness
 # $a0 is x1 left, $a1 is width, $a2 is y1 top, $a3 is height
 # $t0 is the color, rectangle never changes $t0 beacuse it stays set for all 4 sides
 draw_box:
