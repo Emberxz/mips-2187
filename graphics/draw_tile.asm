@@ -32,11 +32,7 @@ draw_tile:
 
     beq $s2,$zero,dtile_done   # empty tile that has no number
 
-    # text color dark on the light 3 and 9 tiles, white on the rest
-    li $t0,0x00FFFFFF
-    bgt $s2,2,dtile_num
-    li $t0,0x00222222
-dtile_num:
+    li $t0,0x00FFFFFF     # every number is white
     sll $t6,$s2,2         # exponent * 4
     la $t5,tileTextX
     add $t5,$t5,$t6
@@ -66,7 +62,6 @@ dtile_done:
 
 # get_color
 # $a0 = exponent returns $v0 = the tile color for it
-# later this is where the theme can pick a different color table
 get_color:
     sll $t5,$a0,2         # exponent * 4
     la $t6,tileColors

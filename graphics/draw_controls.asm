@@ -8,14 +8,15 @@ draw_controls:
     sw $ra,0($sp)
 
     # grey divider between the two columns
-    li $t0,0x00888888
+    li $t0,0x008591A0
     li $a0,262
     li $a1,2
     li $a2,172
     li $a3,70
     jal rectangle
 
-    li $t0,0x00FFFFFF     # sets text white
+    jal get_theme
+    lw $t0,4($v0)         # text = the theme's gamebox color
 
     # left column movement keys
     li $a0,146

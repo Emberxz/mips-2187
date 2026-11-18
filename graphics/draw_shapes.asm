@@ -1,4 +1,67 @@
-# basic shapes: draw_box and rectangle
+# draws basic shapes the get_theme, draw_frame, draw_box and rectangle
+
+# get_theme
+# returns $v0 = address of the current themes colors 
+get_theme:
+    la $v0,themeHome
+    lbu $t5,theme         # theme is a byte 0 = home and 1 = away
+    beq $t5,$zero,gt_done
+    la $v0,themeAway
+gt_done:
+    jr $ra
+
+# draw_frame
+# Draws the outer box and the inner gameboard box
+# outer box = the themes gamebox
+# inner box = Orange in both the themes
+draw_frame:
+    addi $sp,$sp,-4
+    sw $ra,0($sp)
+
+    # Outer box x1=128 width=256 y1=4 height=248
+    jal get_theme
+    lw $t0,4($v0)         # gambox color
+    li $a0,128
+    li $a1,256
+    li $a2,4
+    li $a3,248
+    jal draw_box
+
+    # Inner box x1=140 width=232 y1=12 height=152
+    li $t0,0x00E86100     # orange
+    li $a0,140
+    li $a1,232
+    li $a2,12
+    li $a3,152
+    jal draw_box
+
+    lw $ra,0($sp)
+    addi $sp,$sp,4
+    jr $ra
+
+# draw_game_screen
+# Draws the whole game screen in the current theme
+# background the two boxes the controls and all 16 tiles
+draw_game_screen:
+    addi $sp,$sp,-4
+    sw $ra,0($sp)
+
+    # background covers the whole back display
+    jal get_theme
+    lw $t0,0($v0)         # background color
+    li $a0,0
+    li $a1,512
+    li $a2,0
+    li $a3,256
+    jal rectangle
+
+    jal draw_frame
+    jal draw_controls
+    jal print_matrix
+
+    lw $ra,0($sp)
+    addi $sp,$sp,4
+    jr $ra
 
 # draw_box
 # Draws the outline of a box as four filled rectangles and the BORDER pixels sets thinckness.

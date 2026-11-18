@@ -18,27 +18,8 @@ imageBuffer:
 
 .text
 main:
-    # Blue box x1=128 width=256 y1=4 height=248
-    li $t0,0x001E88E5           # its blue rn
-    li $a0,128
-    li $a1,256
-    li $a2,4
-    li $a3,248
-    jal draw_box
-
-    # Orange box(the game space) x1=140 width=232 y1=12 height=152
-    li $t0,0x00FFA000           # orange for now
-    li $a0,140
-    li $a1,232
-    li $a2,12
-    li $a3,152
-    jal draw_box
-
-    # control labels under the gameboard
-    jal draw_controls
-
-    # all 16 tiles from matrix
-    jal print_matrix
+    # sets up background boxes controls and all 16 tiles in the current theme
+    jal draw_game_screen
 
     # Exit after returning
     li $v0,10
