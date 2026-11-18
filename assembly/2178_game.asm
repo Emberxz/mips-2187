@@ -33,6 +33,9 @@ pow3: .word 0, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147
 .eqv LOSS 2
 .eqv START_GAME 3
 
+# graphics data (font, tile colors, theme colors, strings)
+.include "../graphics/graphics_data.asm"
+
 
 # ------- All game logic goes here -------
 .text
@@ -66,9 +69,7 @@ sw $s1, 4($sp)
 sw $s2, 0($sp)
 
 jal init_matrix	# initialize the game board in memory
-#########################################################
-# For AJ: call your method to draw the matrix board here
-#########################################################
+jal draw_game_screen	# graphics background, boxes, controls, board and score
 
 play_one_game_loop:
 jal get_input	# get input, loads the direction constant into $v0
@@ -96,9 +97,8 @@ beq $s2, WIN, you_won
 
 # if we've gotten here, gameState isn't LOSS or WIN, must be CONTINUE
 jal spawn_tile	# add a new tile to board
-##########################################
-# For AJ. draw the matrix again here!
-##########################################
+jal print_matrix	# graphics: redraw the board
+jal draw_scoreboard	# graphics: redraw the score
 
 j play_one_game_loop # jump back to top of loop
 
@@ -108,6 +108,8 @@ j game_over_logic
 
 
 you_won:
+jal print_matrix	# graphics: show the winning board and score first
+jal draw_scoreboard # graphics: draws the scoreboard
 jal you_win	# draw win screen
 j game_over_logic
 
@@ -165,10 +167,7 @@ start_screen:
 addi $sp, $sp, -4	# allocate space on the stack for $ra
 sw $ra, 0($sp)		# save return address to stack
 
-####################################
-# FOR AJ: build the start menu here!
-####################################
-#* call it in ss_x_pressed below too (or refactor/rearrange)
+jal draw_title_screen	# graphics: the start screen
 
 start_screen_while_loop:
 jal get_key	# key the user hit is now stored in $v0
@@ -193,12 +192,13 @@ j start_screen_end_loop
 
 ss_x_pressed:
 jal show_scores # navigate to the show_scores screen
-# AJ: reprint the start menu here!
+jal draw_title_screen	# graphics: put the start screen back after the scores close
 j start_screen_while_loop # jump back to top of while loop
 
 
 ss_t_pressed:
 jal change_theme	# toggle the theme
+jal draw_title_screen	# graphics: redraw the start screen in the new theme
 j start_screen_while_loop # jump back to top of while loop
 
 
@@ -239,9 +239,7 @@ show_scores:
 addi $sp, $sp, -4	# allocate space on the stack for $ra
 sw $ra, 0($sp)		# save return address to stack
 
-########################################
-# FOR AJ: build scoreboard screen here!
-########################################
+jal draw_high_scores	# graphics: the high scores pop-up
 
 
 show_scores_while_loop:
@@ -363,27 +361,8 @@ jr $ra # return
 
 
 # ---------------------- display --------------------
-
-# --- method: you_win ---
-you_win:
-# registers used:
-# xyz
-
-# TODO: fill out
-# This method is for AJ!
-
-jr $ra
-
-
-# --- method: you_lose ---
-you_lose:
-# registers used:
-# xyz
-
-# TODO: fill out
-# This method is for AJ!
-
-jr $ra
+# you_win, you_lose and the rest of the graphics are in the graphics folder
+# I put the .include a at the bottom
 
 
 # ---------------------- score ----------------------
@@ -631,3 +610,14 @@ lw $s6, 0($sp)
 addiu $sp, $sp, 28
 
 jr $ra
+
+
+# ---------------------- graphics ----------------------
+.include "../graphics/draw_shapes.asm"
+.include "../graphics/draw_text.asm"
+.include "../graphics/draw_controls.asm"
+.include "../graphics/draw_number.asm"
+.include "../graphics/draw_tile.asm"
+.include "../graphics/print_matrix.asm"
+.include "../graphics/draw_scoreboard.asm"
+.include "../graphics/draw_screens.asm"
