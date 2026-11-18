@@ -1,6 +1,52 @@
 # draw_title_screen, you_win and you_lose
 
 # draw_title_screen
+# The start screen
+# a big 2187 with a shadow behind it(ist just moved down and 3 pixel and grey) and PRESS Z under it.
+draw_title_screen:
+    addi $sp,$sp,-4
+    sw $ra,0($sp)
+
+    # background covers the whole 512x256 display
+    jal get_theme
+    lw $t0,0($v0)         # background color
+    li $a0,0
+    li $a1,512
+    li $a2,0
+    li $a3,256
+    jal rectangle
+
+    jal draw_frame
+    jal draw_controls
+
+    # shadow the same 2187 3 pixels right and 3 down in grey
+    li $t0,0x008591A0
+    li $a0,214
+    li $a1,61
+    la $a2,str_title
+    li $a3,6              # scale 6 = 18x30 digits
+    jal draw_text
+
+    # 2187 shadow in the themes game color
+    jal get_theme
+    lw $t0,4($v0)
+    li $a0,211            # centered (256 - 90/2)
+    li $a1,58
+    la $a2,str_title
+    li $a3,6
+    jal draw_text
+
+    # PRESS Z
+    li $t0,0x00E86100     # sets orange
+    li $a0,229            # centered (256 - 54/2)
+    li $a1,118
+    la $a2,str_pressz
+    li $a3,2
+    jal draw_text
+
+    lw $ra,0($sp)
+    addi $sp,$sp,4
+    jr $ra
 
 # you_win
 # Pops up the green you win window over the board

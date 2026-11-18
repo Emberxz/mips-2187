@@ -105,5 +105,9 @@ str_score:  .asciiz "SCORE"
 str_hiscores: .asciiz "HIGH SCORES"
 str_close:  .asciiz "X CLOSE"
 
+# title screen
+str_title:  .asciiz "2187"
+str_pressz: .asciiz "PRESS Z"
+
 # used by draw_number to hold the digits
 numBuf:     .space 8
