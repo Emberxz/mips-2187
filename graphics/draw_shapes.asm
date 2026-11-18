@@ -1,5 +1,7 @@
 # draws basic shapes the get_theme, draw_frame, draw_box and rectangle
 
+.eqv BORDER 3    # thickness of outside of each box
+
 # get_theme
 # returns $v0 = address of the current themes colors 
 get_theme:

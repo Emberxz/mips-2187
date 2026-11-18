@@ -8,13 +8,12 @@
 #   display height in pixels: 256
 #   base address for display: 0x10010000 I think this is the default will have to confirm
 
-.eqv BORDER 3    # thickness of each box outside
-
 .data
 imageBuffer:
 .space 0x80000 # allocate space so 512 x 256 x 4
 
 .include "graphics_data.asm"
+.include "graphics_test_data.asm"   # just my testing data not really needed anymore
 
 .text
 main:

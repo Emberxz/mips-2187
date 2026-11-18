@@ -44,9 +44,6 @@ font:
 .word 0x72A7  # 35   'Z'   +140
 
 # tile tables one word per exponent 0-11 (0 = empty, 11 = 177147 the winning tile)
-# real value of each exponent
-pow3:       .word 0, 3, 9, 27, 81, 243, 729, 2187
-            .word 6561, 19683, 59049, 177147
 # tile colors
 #                 empty       3           9           27
 tileColors: .word 0x0054657A, 0x0048AAD0, 0x00DBA43D, 0x00F0873B
@@ -68,19 +65,6 @@ tileTextX:  .word 0, 21, 21, 15, 15,  9,  9,  3,   3,    6,    6,     2
 #                 background  outerbox/ game box
 themeHome:  .word 0x000B2341, 0x00FFFFFF             # blue with white
 themeAway:  .word 0x00FFFFFF, 0x000B2341             # white with blue
-
-# TEMP test board so print_matrix has something to draw
-# remove this once the game data file defines the real matrix
-matrix:     .word 11, 10, 9, 8
-            .word 4, 5, 6, 7
-            .word 3, 2, 1, 0
-            .word 0, 1, 0, 2
-# TEMP test score so the win/lose pop-up has a number to show
-score:      .word 48213
-# TEMP test high scores (the team file starts these at all 0)
-high_scores: .word 48213, 1458, 0, 0, 0
-# TEMP test theme 0 = home 1 = away (the team file has the real one)
-theme:      .byte 0
 
 # control labels 
 # .asciiz lets me go through a string and convert each char
