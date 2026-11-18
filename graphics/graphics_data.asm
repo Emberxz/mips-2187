@@ -75,6 +75,8 @@ matrix:     .word 11, 10, 9, 8
             .word 4, 5, 6, 7
             .word 3, 2, 1, 0
             .word 0, 1, 0, 2
+# TEMP test score so the win/lose pop-up has a number to show
+score:      .word 48213
 # TEMP test theme 0 = home 1 = away (the team file has the real one)
 theme:      .byte 0
 
@@ -91,6 +93,11 @@ str_quit:   .asciiz "Q QUIT"
 str_theme:  .asciiz "T THEME"
 str_start:  .asciiz "Z START"
 str_scores: .asciiz "X SCORES"
+
+# win / lose pop-up
+str_win:    .asciiz "YOU WIN"
+str_lose:   .asciiz "YOU LOSE"
+str_score:  .asciiz "SCORE"
 
 # used by draw_number to hold the digits
 numBuf:     .space 8
