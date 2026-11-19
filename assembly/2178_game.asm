@@ -631,3 +631,316 @@ lw $s6, 0($sp)
 addiu $sp, $sp, 28
 
 jr $ra
+
+
+#Caleb's methods
+#check_mat.py methods
+# ----------- check_mat.py ------------
+
+#def has_177147():
+#    #checks if any cell has value 2187, returns true/false
+#    for i in range(16):
+#        if gd.matrix[i] == gd.WIN_EXP:
+#            return True
+#    return False
+#checks if any cell has value 2187, returns true/false
+
+
+has_177147:
+	la $t0, matrix #starting address of matrix
+	li $t1, 0 #i=0
+	li $t4, WIN_EXP #$t4 = win condition exponent
+	
+has_177147_loop:
+	bge $t1, 16, has_177147_false #check if finished checked all cells
+	
+	sll $t2, $t1, 2
+	addu $t2, $t0, $t2
+	lw $t3, 0($t2)
+	
+	beq $t3, $t4, has_177147_true #true if current cell = 177147
+	
+	addiu $t1, $t1, 1
+	j has_177147_loop #iterate to next cell
+	
+has_177147_false:
+	li $v0, 0
+	jr $ra
+
+
+has_177147_true:
+	li $v0, 1
+	jr $ra
+	
+#can_move()
+#def can_move():
+#    #checks if there are any possible moves / hasn't loss
+#   #returns true if any cell is 0 or if anything can still be merged
+#    for i in range(16):
+#        if gd.matrix[i] == 0:
+#            return True
+#        #checking right neighbors, not checking last column since it doesn't have a right neighbor
+#        if i % 4 < 3:
+#           if gd.matrix[i] == gd.matrix[i+1]:
+#                return True    
+#        
+#        #checking below neighbors, not checking bottom column since it doesn't have a below neighbor
+#        if i < 12:
+#            if gd.matrix[i] == gd.matrix[i+4]:
+#                return True
+#    
+#    #dont need to check left or above neighbors as it would be overlapping these checks
+#    return False	
+	
+can_move:
+	la $t0, matrix
+	li $t1, 0
+	
+can_move_loop:
+	bge $t1, 16, can_move_false #if all cells checked 
+	
+	sll $t2, $t1, 2
+	addu $t2, $t0, $t2  #initialize matrix
+	lw $t3, 0($t2)
+	
+	
+	beq $t3, $zero, can_move_true #check for empty cell
+	
+	andi $t4, $t1, 3
+	beq $t4, 3, can_move_check_down #skip right check if last column
+	
+	lw $t5, 4($t2)
+	beq $t3, $t5, can_move_true
+	
+	
+can_move_check_down:
+	bge $t1, 12, can_move_next #skip if last row
+	lw $t5, 16($t2)
+	beq $t3, $t5, can_move_true
+
+can_move_next:
+	addiu $t1, $t1, 1
+	j can_move_loop
+	
+can_move_false:
+	li $v0, 0
+	jr $ra
+
+can_move_true:
+	li $v0, 1
+	jr $ra
+
+
+#check_mat()
+
+#def check_mat():
+#    #checks the matrix if win/loss/ possible moves
+#    if has_177147():
+#        return gd.WIN
+#    if not can_move():
+#        return gd.LOSS
+#    return gd.CONTINUE
+    
+
+check_mat:
+	addiu $sp, $sp, -4 #allocate stack space
+	sw $ra, 0($sp)
+	
+	jal has_177147
+	bne $v0, $zero, check_mat_win #$v0 = true (1) or false (0) true returns WIN
+	
+	jal can_move
+	beq $v0, $zero, check_mat_loss # false returns LOSS
+	
+	li $v0, CONTINUE #else, return CONTINUE
+	j check_mat_end
+
+check_mat_win:
+	li $v0, WIN
+	j check_mat_end
+
+check_mat_loss:
+	li $v0, LOSS
+
+check_mat_end:
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
+	jr $ra
+	
+	
+# --------- Matrix.py ---------
+
+#def count_empty():
+#    #counts numbers of cells equal to 0
+#    #returns int
+#    count = 0
+#    for i in range(0,16):
+#        if gd.matrix[i] == 0:
+#            count += 1
+#
+#    return count 
+
+count_empty: 
+	la $t0, matrix
+	li $t1, 0
+	li $v0, 0
+
+count_empty_loop:
+	bge $t1, 16, count_empty_end 
+	
+	sll $t2, $t1, 2
+	addu $t2, $t0, $t2   #literally just looping through the matrix and 
+	lw $t3, 0($t2)
+	
+	bne $t3, $zero, count_empty_next 
+	addiu $v0, $v0, 1
+
+count_empty_next:
+	addiu $t1, $t1, 1
+	j count_empty_loop
+
+count_empty_end:
+	jr $ra
+
+# rand_range()
+
+#def rand_range(n):
+#    #returns a random number 0 - n-1    
+#    rng = random.randrange(n)
+#
+#    return rng
+
+rand_range:
+	move $a1, $a0
+	li $a0, 0
+	li $v0, 42
+	syscall
+	
+	move $v0, $a0
+	jr $ra
+	
+#spawn_tile()
+
+
+#def spawn_tile():
+#    #spawns a new tile equal to either 3 or 9, spawns a 3 9/10 times
+#    n = count_empty()
+#    #returns if there are no empty spots
+#    if n == 0:
+#        return
+#    
+#    kth_empty = rand_range(n)
+#    empty_count = 0
+#    new_tile_index = -1
+#    for i in range(0,16):
+#        if gd.matrix[i] == 0:
+#            if empty_count == kth_empty:
+#                new_tile_index = i
+#                break
+#            empty_count += 1
+#    
+#    #calulate if we insert a 3 or a 9
+#    if rand_range(10) < 9:
+#        gd.matrix[new_tile_index] = 1
+#    else:
+#        gd.matrix[new_tile_index] = 2	
+
+spawn_tile:
+	addiu $sp, $sp, -8
+	sw $ra, 4($sp)
+	sw $s0, 0($sp)
+	
+	jal count_empty
+	beq $v0, $zero, spawn_tile_end
+	
+	move $a0, $v0
+	jal rand_range
+	move $t4, $v0
+	
+	la $t0, matrix
+	li $t1, 0
+	li $t5, 0
+	
+
+spawn_tile_loop:
+	bge $t1, 16, spawn_tile_end
+	
+	sll $t2, $t1, 2
+	addu $t2, $t0, $t2
+	lw $t3, 0($t2)
+	
+	bne $t3, $zero, spawn_tile_next
+	beq $t5, $t4, spawn_tile_found
+	
+	addiu $t5, $t5, 1
+
+spawn_tile_next:
+	addiu $t1, $t1, 1
+	j spawn_tile_loop
+
+
+spawn_tile_found:
+	move $s0, $t2
+	
+	li $a0, 10 # calling rand_range with 10 so we get random number 0-9
+	jal rand_range
+	
+	li $t3, 1
+	blt $v0, 9, spawn_tile_store #if random num is 9, we use exponent 2
+	
+	li $t3, 2 
+
+
+spawn_tile_store:
+	sw $t3, 0($s0)
+
+
+spawn_tile_end:
+	lw $s0, 0($sp)
+	lw $ra, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra
+
+#init_matrix()
+
+#def init_matrix():
+#    #should intialize the beginning matrix for the game
+#    #sets score to 0
+#    #calls spawn_tile() twice
+#    #returns nothing
+#    gd.matrix = [0] * 16
+#    gd.score = 0
+#    spawn_tile()
+#    spawn_tile()
+
+
+init_matrix:
+	addiu $sp, $sp, -8
+	sw $ra, 4($sp)
+	
+	la $t0, matrix
+	li $t1, 0
+	
+
+init_matrix_loop:
+	bge $t1, 16, init_matrix_spawn
+	
+	sll $t2, $t1, 2
+	addu $t2, $t0, $t2
+	sw $zero, 0($t2)
+	
+	addiu $t1, $t1, 1
+	j init_matrix_loop
+
+
+init_matrix_spawn:
+	la $t0, score
+	sw $zero, 0($t0)
+	
+	jal spawn_tile
+	jal spawn_tile
+	
+	lw $ra, 4($sp)
+	addiu $sp, $sp, 8
+	jr $ra
+
