@@ -1,5 +1,7 @@
 # mips-2187
 
+# Youtube Gameplay
+https://youtu.be/lpDhE0pCk6c
 2048 in base 3, written in MIPS assembly for MARS. Two equal tiles merge into one tile worth 3× as much (3 + 3 → 9, 9 + 9 → 27, …), and reaching 2187 (3^7) wins.
 
 ## Layout
