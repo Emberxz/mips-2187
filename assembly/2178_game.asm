@@ -10,6 +10,7 @@ imageBuffer: .space 0x80000 # allocate space for 512 x 256 x 4 (each pixel is st
 matrix: .word 0:16 	   # OFFSET TO ACCESS A VALUE: offset = (rowNum * 4 + colNum) * 4 (row and col vals are 0-3)	
 		   	   # *stored in row-major order	**4 rows * 4 cols = 16 words (ints)
 
+
 score: .word 0		   # must be loaded into 2 registers; reguires lui and ori insturctions
 			   # *the maximum score a 32 bit int can store is 2,147,483,647
 			   
@@ -290,7 +291,7 @@ get_key:
 
 lw   $t0, 0xFFFF0000($zero)     # load keyboard control register
 andi $t0, $t0, 0x0001           # check if a key is available
-beq  $t0, $zero, wait_key       # if not, keep looping
+beq  $t0, $zero, get_key       # if not, keep looping
 
 lw   $v0, 0xFFFF0004($zero)     # read ASCII value of key pressed. return it by putting it into $v0
 jr $ra	# return to the caller
@@ -303,6 +304,7 @@ beq $a0, 119, w_pressed	# key = 119 (ascii w)
 beq $a0, 97, a_pressed	# key = 97 (ascii a)
 beq $a0, 115, s_pressed	# key = 115 (ascii s)
 beq $a0, 100, d_pressed	# key = 100 (ascii d)
+beq $a0, 113, q_pressed  # key = 113, (ascxii q)
 
 li $v0, -1	# key was not w, a, s, or d. return -1
 jr $ra
@@ -323,7 +325,9 @@ d_pressed:
 li $v0, LEFT	# return LEFT
 jr $ra
 
-
+q_pressed:
+li $v0, QUIT	# return QUIT
+jr $ra
 
 # method: wait_for_restart
 # returns 1 if r is pressed and 0 if q is pressed
@@ -335,7 +339,7 @@ wait_for_restart_while_loop:
 jal get_key	# key the user hit is now stored in $v0
 
 beq $v0, 114, r_pressed	# key = 114 (ascii r)
-beq $v0, 113, q_pressed	# key = 113 (ascii q)
+beq $v0, 113, q_pressed2	# key = 113 (ascii q)
 
 j wait_for_restart_while_loop # neither r nor q was pressed, jump back to top of loop
 
@@ -346,7 +350,7 @@ lw $ra, 0($sp)
 addi $sp, $sp, 4  # move the stack pointer back up to where it was
 jr $ra # return
 
-q_pressed:
+q_pressed2:
 li $v0, 0	# return False (0)
 # destroy the stack frame; restore all from their offests
 lw $ra, 0($sp)
@@ -583,11 +587,11 @@ sw $s3, 0($s2)
 
 # increment points
 la $t0, pow3        # $t0 = &pow3
-move $a0, $zero     # $a0 = 0 = offset into pow3
-sll $a0, $s5, 2   # $a0 = line[i + 1] * 4
-addu $t0, $t0, $a0  # $t0 = &pow3[line[i + 1]]
-lw $a0, 0($t0)      # $a0 = pow3[line[i + 1]]
-jal update_score    # update score with new points
+move $t1, $zero     # $t1 = 0 = offset into pow3
+sll $t1, $s5, 2   # $t1 = line[i + 1] * 4
+addu $t0, $t0, $t1  # $t0 = &pow3[line[i + 1]]
+lw $t1, 0($t0)      # $t1 = pow3[line[i + 1]]
+addu $s0, $s0, $t1
 
 addiu $s1, $s1, 1	# i++
 
@@ -691,7 +695,7 @@ _line_positions:
     beq  $a1, RIGHT, pos_right
     jr   $ra                      # default case: return immediately
 
-pos_up:
+pos_down:
     # [(3 - row) * 4 + i for row in range(4)]
     bge  $t0, 4, pos_done
     li   $t1, 3
@@ -702,9 +706,9 @@ pos_up:
     add  $t2, $a2, $t2
     sw   $t1, 0($t2)
     addi $t0, $t0, 1
-    j    pos_up
+    j    pos_down
 
-pos_down:
+pos_up:
     # [row * 4 + i for row in range(4)]
     bge  $t0, 4, pos_done
     sll  $t1, $t0, 2              # row * 4
@@ -713,7 +717,7 @@ pos_down:
     add  $t2, $a2, $t2
     sw   $t1, 0($t2)
     addi $t0, $t0, 1
-    j    pos_down
+    j    pos_up
 
 pos_left:
     # [i * 4 + (3 - column) for column in range(4)]
@@ -757,7 +761,7 @@ get_line:
     addi $a2, $sp, 0              # pass &positions[0] in $a2
     jal  _line_positions
 
-    la   $t0, gd_matrix
+    la   $t0, matrix
     li   $t1, 0                   # k = 0
 
 get_line_loop:
@@ -768,7 +772,7 @@ get_line_loop:
     add  $t3, $sp, $t2
     lw   $t4, 0($t3)
 
-    # value = gd_matrix[position]
+    # value = matrix[position]
     sll  $t4, $t4, 2              # position * 4
     add  $t4, $t0, $t4
     lw   $t5, 0($t4)
@@ -801,7 +805,7 @@ set_line:
     addi $a2, $sp, 0              # pass &positions[0] in $a2
     jal  _line_positions
 
-    la   $t0, gd_matrix
+    la   $t0, matrix
     li   $t1, 0                   # k = 0
 
 set_line_loop:
@@ -816,7 +820,7 @@ set_line_loop:
     add  $t3, $s0, $t2
     lw   $t5, 0($t3)
 
-    # gd_matrix[position] = value
+    # matrix[position] = value
     sll  $t4, $t4, 2              # position * 4
     add  $t4, $t0, $t4
     sw   $t5, 0($t4)
