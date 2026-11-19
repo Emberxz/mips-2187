@@ -583,11 +583,11 @@ sw $s3, 0($s2)
 
 # increment points
 la $t0, pow3        # $t0 = &pow3
-move $t1, $zero     # $t1 = 0 = offset into pow3
-sll $t1, $t1, $s5   # $t1 = line[i + 1] * 4
-addu $t0, $t0, $t1  # $t0 = &pow3[line[i + 1]]
-lw $t1, 0($t0)      # $t1 = pow3[line[i + 1]]
-addu $s0, $s0, $t1  # $s0 += pow3[line[i + 1]]
+move $a0, $zero     # $a0 = 0 = offset into pow3
+sll $a0, $a0, $s5   # $a0 = line[i + 1] * 4
+addu $t0, $t0, $a0  # $t0 = &pow3[line[i + 1]]
+lw $a0, 0($t0)      # $a0 = pow3[line[i + 1]]
+jal update_score    # update score with new points
 
 addiu $s1, $s1, 1	# i++
 
